@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#10131c">
+<meta name="description" content="LIFE RPG — прокачивай себя реальными действиями">
+<link rel="manifest" href="manifest.webmanifest">
+<title>LIFE RPG</title>
+<style>
+:root{color-scheme:dark;--bg:#0c0f17;--panel:#171c29;--line:#293247;--txt:#f4f6fb;--muted:#a6b0c4;--gold:#f2c66d;--blue:#83b7ff;--green:#75d6a1;--red:#ff8585}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% -10%,#26314a 0,#0c0f17 48%);color:var(--txt);font:16px system-ui,-apple-system,Segoe UI,sans-serif}
+main{max-width:760px;margin:auto;padding:18px 15px 42px}.top{display:flex;align-items:center;justify-content:space-between;gap:12px}.logo{font-weight:900;letter-spacing:1.5px;font-size:20px}.pill{border:1px solid var(--line);border-radius:999px;padding:7px 11px;color:var(--gold);font-size:12px}
+h1{font-size:30px;margin:20px 0 5px}h2{font-size:19px;margin:0 0 12px}.muted{color:var(--muted);font-size:13px}.panel{background:linear-gradient(145deg,#1b2232,#131824);border:1px solid var(--line);border-radius:18px;padding:16px;margin:13px 0;box-shadow:0 10px 35px #0003}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.stat{background:#101521;border:1px solid var(--line);border-radius:13px;padding:12px}.stat b{display:block;font-size:22px}.stat small{color:var(--muted)}
+.bar{height:9px;background:#30384a;border-radius:20px;overflow:hidden;margin:9px 0}.bar span{display:block;height:100%;background:linear-gradient(90deg,#e4a94d,#ffe39a);width:0}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.btn{border:1px solid var(--line);background:#222b3d;color:var(--txt);padding:12px 14px;border-radius:12px;font-weight:700;cursor:pointer}.btn.primary{background:linear-gradient(135deg,#b98232,#e6bd67);color:#17130c;border:0}.btn:disabled{opacity:.4}.btn.full{width:100%;margin-top:9px}
+input,textarea,select{width:100%;background:#0e1420;border:1px solid var(--line);border-radius:10px;color:var(--txt);padding:12px;font:inherit;margin:5px 0 10px}
+.tabs{display:flex;gap:7px;overflow:auto;margin:16px 0}.tab{white-space:nowrap}.tab.active{border-color:var(--gold);color:var(--gold)}
+.view{display:none}.view.active{display:block}
+video{width:100%;border-radius:13px;background:#05070b;max-height:390px;object-fit:cover;transform:scaleX(-1)}
+.notice{padding:11px 12px;background:#252d3e;border-radius:11px;color:#cbd5e8;font-size:13px;margin:10px 0}.notice.warn{background:#3b2a22;color:#ffd5a6}
+.big{font-size:32px;font-weight:900;color:var(--gold)}.repgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.repgrid .stat{text-align:center}
+ul{padding-left:20px;color:#cbd5e8}.footer{text-align:center;color:#748097;font-size:11px;margin-top:22px}
+@media(max-width:420px){.stats{grid-template-columns:repeat(3,1fr)}.stat{padding:9px}.stat b{font-size:19px}.grid{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<main>
+ <div class="top"><div class="logo">⚔ LIFE RPG</div><div class="pill">REAL LIFE • REAL XP</div></div>
+ <h1 id="greeting">Твой путь начинается</h1><div class="muted">Прокачивай персонажа действиями в реальной жизни.</div>
+ <section class="panel">
+  <div class="top"><div><div class="muted">УРОВЕНЬ</div><div class="big" id="level">1</div></div><div style="text-align:right"><div class="muted">ОПЫТ</div><b id="xp">0 / 100 XP</b></div></div>
+  <div class="bar"><span id="xpbar"></span></div>
+  <div class="stats">
+   <div class="stat"><b id="strength">0</b><small>Сила</small></div>
+   <div class="stat"><b id="mind">0</b><small>Интеллект</small></div>
+   <div class="stat"><b id="discipline">0</b><small>Дисциплина</small></div>
+  </div>
+ </section>
+ <div class="tabs">
+  <button class="btn tab active" data-tab="home">Профиль</button>
+  <button class="btn tab" data-tab="training">Тренировка</button>
+  <button class="btn tab" data-tab="mindtab">Интеллект</button>
+  <button class="btn tab" data-tab="boss">Боссы</button>
+ </div>
+ <section class="view active" id="home">
+  <div class="panel"><h2>Ежедневный вызов</h2><div id="daily">Выполни тренировку или тест, чтобы получить опыт.</div><div class="notice">Награды ограничены по типу и дню. Прогресс хранится на этом устройстве.</div></div>
+  <div class="panel"><h2>Правила прокачки</h2><ul><li>Тренировка засчитывается только после распознавания движений камерой.</li><li>За тест нужны правильные ответы.</li><li>Не тренируйся через боль и не гонись за количеством.</li></ul></div>
+ </section>
+ <section class="view" id="training">
+  <div class="panel"><h2>Камера и техника</h2><div class="notice warn" id="camstatus">Камера запускается только после твоего нажатия. Для работы нужен Chrome и HTTPS.</div>
+   <video id="video" playsinline muted></video>
+   <div class="repgrid"><div class="stat"><div class="big" id="reps">0</div><small>Повторения</small></div><div class="stat"><div class="big" id="exercise">—</div><small>Упражнение</small></div></div>
+   <label class="muted" for="exerciseSelect">Упражнение</label><select id="exerciseSelect"><option value="squat">Приседания</option><option value="pushup">Отжимания</option></select>
+   <div class="grid"><button class="btn primary" id="startCam">Включить камеру</button><button class="btn" id="stopCam" disabled>Остановить</button></div>
+   <button class="btn full" id="finishWorkout" disabled>Завершить и получить XP</button>
+   <div class="muted" id="poseHint">Встань так, чтобы тело было видно целиком. Для приседаний лучше расположить камеру сбоку.</div>
+  </div>
+  <div class="panel"><h2>Безопасность</h2><div class="muted">Распознавание оценивает положение суставов приблизительно, а не заменяет тренера. Камера обрабатывается на устройстве; видео и звук не записываются и не отправляются приложением.</div></div>
+ </section>
+ <section class="view" id="mindtab">
+  <div class="panel"><h2>Проверка интеллекта</h2><div class="muted">Ответь на 3 вопроса. Для награды нужно минимум 2 правильных ответа. Попытка ограничена одной наградой в день.</div>
+   <div id="quiz"></div><button class="btn primary full" id="submitQuiz">Проверить ответы</button><div id="quizResult" class="notice" hidden></div>
+  </div>
+  <div class="panel"><h2>Чтение</h2><label class="muted">Что читаешь?</label><input id="book" placeholder="Название книги"><label class="muted">Кратко изложи прочитанное своими словами</label><textarea id="summary" rows="4" placeholder="Напиши 3–5 предложений о прочитанном..."></textarea><div class="notice">Эта версия сохраняет заметку, но не выдаёт XP только за ввод текста: содержимое пока не проверяется автоматически.</div><button class="btn full" id="saveReading">Сохранить заметку</button><div id="readingSaved" class="muted"></div>
+  </div>
+ </section>
+ <section class="view" id="boss">
+  <div class="panel"><h2>👹 Страж слабости</h2><div class="muted">Первый босс. Требует силы и интеллекта.</div><div class="bar"><span id="bossbar" style="width:100%;background:linear-gradient(90deg,#9a4444,#ff8b8b)"></span></div><b id="bosshealth">100 HP</b><div class="notice">Чтобы открыть бой: набери 30 XP силы и 30 XP интеллекта. Победа даст 80 XP один раз.</div><button class="btn primary full" id="fightBoss">Вступить в бой</button><div id="bossmsg" class="muted"></div></div>
+ </section>
+ <div class="footer">LIFE RPG • Версия 3.0 • Прогресс хранится локально</div>
+</main>
+<script type="module">
+const $=id=>document.getElementById(id);
+const today=()=>new Date().toISOString().slice(0,10);
+const fresh=()=>({xp:0,strength:0,mind:0,discipline:0,boss:100,bossWon:false,claims:{},notes:[]});
+let state={...fresh(),...JSON.parse(localStorage.getItem('lifeRpgSave')||'{}')};
+function save(){localStorage.setItem('lifeRpgSave',JSON.stringify(state));render()}
+function xpNeed(){return state.level?state.level*100:100}
+function level(){return Math.floor(state.xp/100)+1}
+function earn(amount,stat,key){if(state.claims[key])return false;state.claims[key]=today();state.xp+=amount;state[stat]+=amount;save();return true}
+function render(){
+ $('level').textContent=level();$('xp').textContent=`${state.xp%100} / 100 XP`;$('xpbar').style.width=(state.xp%100)+'%';
+ $('strength').textContent=state.strength;$('mind').textContent=state.mind;$('discipline').textContent=state.discipline;
+ $('bossbar').style.width=state.boss+'%';$('bosshealth').textContent=state.boss+' HP';
+ $('fightBoss').disabled=state.bossWon||state.strength<30||state.mind<30;
+ $('bossmsg').textContent=state.bossWon?'Босс побеждён!':state.strength<30||state.mind<30?'Пока недостаточно характеристик.':'Ты готов к бою.';
+ $('daily').textContent=state.claims['quiz-'+today()]?'Тест на сегодня пройден. Продолжай развиваться!':'Пройди тест или тренировку, чтобы получить награду.';
+}
+render();
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));b.classList.add('active');$(''+b.dataset.tab).classList.add('active')});
+const questions=[
+ {q:'Сколько будет 15 × 4?',a:['45','60','64'],c:1},
+ {q:'Как называется процесс, при котором растения используют свет для создания органических веществ?',a:['Фотосинтез','Испарение','Дыхание'],c:0},
+ {q:'Какое число является простым?',a:['21','29','35'],c:1},
+ {q:'Если все вороны — птицы, а некоторые птицы не умеют летать, что точно верно?',a:['Все вороны не летают','Все птицы — вороны','Вороны относятся к птицам'],c:2},
+ {q:'Сколько градусов в сумме углов треугольника на плоскости?',a:['90°','180°','360°'],c:1}
+];
+let current=[];
+function makeQuiz(){current=[...questions].sort(()=>Math.random()-.5).slice(0,3);$('quiz').innerHTML=current.map((q,i)=>`<div style="margin:15px 0"><b>${i+1}. ${q.q}</b>${q.a.map((a,j)=>`<label style="display:block;margin:8px 0"><input type="radio" name="q${i}" value="${j}" style="width:auto;margin-right:7px">${a}</label>`).join('')}</div>`).join('')}
+makeQuiz();
+$('submitQuiz').onclick=()=>{
+ const key='quiz-'+today();if(state.claims[key]){$('quizResult').hidden=false;$('quizResult').textContent='Награда за тест сегодня уже получена.';return}
+ let score=0;current.forEach((q,i)=>{const v=document.querySelector(`input[name=q${i}]:checked`);if(v&&+v.value===q.c)score++});
+ $('quizResult').hidden=false;$('quizResult').textContent=`Результат: ${score}/3. `+(score>=2?(earn(20,'mind',key)?'Получено 20 XP интеллекта!':'Награда уже получена.'):'Нужно минимум 2 правильных ответа.');render();
+};
+$('saveReading').onclick=()=>{const book=$('book').value.trim(),summary=$('summary').value.trim();if(!book||summary.length<40){$('readingSaved').textContent='Укажи книгу и напиши хотя бы 40 символов.';return}state.notes.push({book,summary,date:today()});save();$('readingSaved').textContent='Заметка сохранена. XP за неё пока не начисляется без проверки понимания.';$('summary').value=''};
+$('fightBoss').onclick=()=>{if(state.bossWon||state.strength<30||state.mind<30)return;state.boss=0;state.bossWon=true;state.xp+=80;state.discipline+=20;save();$('bossmsg').textContent='Победа! +80 XP и +20 дисциплины.'};
+let stream=null,landmarker=null,raf=0,repCount=0,phase='up',lastRep=0,ready=false;
+const status=t=>$('camstatus').textContent=t;
+function angle(a,b,c){const ab=[a.x-b.x,a.y-b.y],cb=[c.x-b.x,c.y-b.y];const dot=ab[0]*cb[0]+ab[1]*cb[1],m=Math.hypot(...ab)*Math.hypot(...cb);return Math.acos(Math.max(-1,Math.min(1,dot/(m||1))))*180/Math.PI}
+async function setupPose(){
+ if(!window.isSecureContext)throw new Error('Камера требует HTTPS. Открой опубликованный адрес в Chrome.');
+ const mp=await import('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/+esm');
+ const vision=await mp.FilesetResolver.forVisionTasks('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm');
+ landmarker=await mp.PoseLandmarker.createFromOptions(vision,{baseOptions:{modelAssetPath:'https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task',delegate:'CPU'},runningMode:'VIDEO',numPoses:1});
+}
+$('startCam').onclick=async()=>{
+ $('startCam').disabled=true;
+ try{
+  if(!navigator.mediaDevices?.getUserMedia)throw new Error('Браузер не дал доступ к камере. Открой приложение в Chrome по HTTPS.');
+  status('Загружаю модель распознавания движений…');
+  await setupPose();
+  stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:{ideal:640},height:{ideal:480}},audio:false});
+  $('video').srcObject=stream;await $('video').play();repCount=0;phase='up';$('reps').textContent='0';$('exercise').textContent=$('exerciseSelect').selectedOptions[0].text;ready=true;
+  $('stopCam').disabled=false;$('finishWorkout').disabled=true;status('Камера работает. Выполняй движение спокойно и полностью.');loop();
+ }catch(e){status('Не удалось запустить камеру: '+(e?.message||e));$('startCam').disabled=false}
+};
+function loop(){
+ if(!ready||!landmarker)return;
+ const v=$('video');
+ if(v.readyState>=2){
+  const res=landmarker.detectForVideo(v,performance.now());const p=res.landmarks?.[0];
+  if(p){
+   const ex=$('exerciseSelect').value;let a;
+   if(ex==='squat'){const hip=p[24],knee=p[26],ankle=p[28];a=angle(hip,knee,ankle)}
+   else {const shoulder=p[12],elbow=p[14],wrist=p[16];a=angle(shoulder,elbow,wrist)}
+   if(Number.isFinite(a)){
+    if(a>155)phase='up';
+    if(a<95&&phase==='up'&&Date.now()-lastRep>500){phase='down';repCount++;lastRep=Date.now();$('reps').textContent=repCount;$('finishWorkout').disabled=repCount<5}
+    if(a>155&&phase==='down')phase='up';
+   }
+  }
+ }
+ raf=requestAnimationFrame(loop);
+}
+function stop(){ready=false;cancelAnimationFrame(raf);if(stream)stream.getTracks().forEach(t=>t.stop());stream=null;$('video').srcObject=null;$('stopCam').disabled=true;$('startCam').disabled=false;status('Камера остановлена.')}
+$('stopCam').onclick=stop;
+$('finishWorkout').onclick=()=>{
+ if(repCount<5)return;const ex=$('exerciseSelect').value;const key=`workout-${ex}-${today()}`;
+ const ok=earn(15,'strength',key);stop();$('finishWorkout').disabled=true;
+ status(ok?`Засчитано ${repCount} повторений. +15 XP силы.`:'Награда за это упражнение сегодня уже получена.');repCount=0;
+};
+$('exerciseSelect').onchange=()=>{phase='up';$('exercise').textContent=$('exerciseSelect').selectedOptions[0].text};
+if('serviceWorker' in navigator && location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
+</script>
+</body></html>

@@ -1,0 +1,10 @@
+{
+  "name": "LIFE RPG — прокачка в реальной жизни",
+  "short_name": "LIFE RPG",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0c0f17",
+  "theme_color": "#10131c",
+  "description": "Тренировки, интеллект, уровни и боссы"
+}
